@@ -6,16 +6,23 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["WhatIBought.csproj", "."]
-RUN dotnet restore "./WhatIBought.csproj"
-COPY . .
+#TODO: this is the best way of doing this? I think not
+COPY ./WhatIBought/WhatIBoughtAPI.csproj WhatIBoughtAPI.csproj
+COPY ./Infra.IoC/Infra.IoC.csproj ../Infra.IoC/Infra.IoC.csproj
+COPY ./Application/Application.csproj ../Application/Application.csproj
+COPY ./Infra/Infra.csproj ../Infra/Infra.csproj
+RUN dotnet restore "./WhatIBoughtAPI.csproj"
+COPY ./Infra.IoC ../Infra.IoC
+COPY ./Application ../Application
+COPY ./Infra ../Infra
+COPY ./WhatIBought .
 WORKDIR "/src/."
-RUN dotnet build "WhatIBought.csproj" -c Release -o /app/build
+RUN dotnet build "WhatIBoughtAPI.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "WhatIBought.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "WhatIBoughtAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "WhatIBought.dll"]
+ENTRYPOINT ["dotnet", "WhatIBoughtAPI.dll"]
