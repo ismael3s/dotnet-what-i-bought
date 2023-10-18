@@ -5,33 +5,42 @@ using HtmlAgilityPack;
 namespace Infra.Gateways;
 public class HtmlAgilityPackSefazGateway : ISefazGateway
 {
+    private readonly IHttpClientFactory _httpClientFactory;
+
+    public HtmlAgilityPackSefazGateway(IHttpClientFactory httpClientFactory)
+    {
+        _httpClientFactory = httpClientFactory;
+    }
+
     public async Task<Buy> FindPurchaseInfos(string URL)
     {
-        var htmlWeb = new HtmlWeb();
-        //TODO: make a HTTP  Request using HttpClient get the response and load it into the HtmlDocument
-
-        //var doc = await htmlWeb.LoadFromWebAsync(URL);
-        //List<Item> items = doc.DocumentNode.SelectNodes("//tr/td[1]")
-        //  .Select((element) =>
-        //  {
-        //      var totalPrice = ExtractStringAsDecimal(element.ParentNode.SelectSingleNode("td[2]/span").InnerText);
-        //      var itemName = element.SelectSingleNode("span[@class='txtTit']").InnerText?.Trim() ?? "";
-        //      var unit = element.SelectSingleNode("span[@class='RUN']").InnerText
-        //        ?.Split("UN: ")
-        //        ?.ElementAt(1)
-        //        ?.Trim();
-        //      var quantity = ExtractStringAsDecimal(
-        //          element.SelectSingleNode("span[@class='Rqtd']").InnerText
-        //          , ":");
-        //      var price = ExtractStringAsDecimal(
-        //          element.SelectSingleNode("span[@class='RvlUnit']").InnerText,
-        //        ":");
-        //      var item = new Item(Name: itemName, Unit: unit!, Quantity: quantity, UnitPrice: price, TotalPrice: totalPrice);
-        //      return item;
-        //  })
-        //  .ToList();
-        //Market market = ExtractMarket(doc);
-        var buy = new Buy(URL: URL, Market: new Market(Name: "Mock", CNPJ: "23.306.904/0001-45", Address: "teste", FantasyName: "Mock"), Items: new List<Item>());
+        var client = _httpClientFactory.CreateClient();
+        var response = await client.GetAsync(URL);
+        var html = await response.Content.ReadAsStringAsync();
+        var doc = new HtmlDocument();
+        doc.LoadHtml(html);
+        List<Item> items = doc.DocumentNode.SelectNodes("//tr/td[1]")
+         .Select((element) =>
+         {
+             var totalPrice = ExtractStringAsDecimal(element.ParentNode.SelectSingleNode("td[2]/span").InnerText);
+             var itemName = element.SelectSingleNode("span[@class='txtTit']").InnerText?.Trim() ?? "";
+             var unit = element.SelectSingleNode("span[@class='RUN']").InnerText
+               ?.Split("UN: ")
+               ?.ElementAt(1)
+               ?.Trim();
+             var quantity = ExtractStringAsDecimal(
+                 element.SelectSingleNode("span[@class='Rqtd']").InnerText
+                 , ":");
+             var price = ExtractStringAsDecimal(
+                 element.SelectSingleNode("span[@class='RvlUnit']").InnerText,
+               ":");
+             var item = new Item(Name: itemName, Unit: unit!, Quantity: quantity, UnitPrice: price, TotalPrice: totalPrice);
+             return item;
+         })
+         .ToList();
+        Market market = ExtractMarket(doc);
+        //new Market(Name: "Mock", CNPJ: "23.306.904/0001-45", Address: "teste", FantasyName: "Mock")
+        var buy = new Buy(URL: URL, Market: market, Items: items);
         return buy;
     }
 
