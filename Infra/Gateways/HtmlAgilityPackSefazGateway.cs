@@ -8,32 +8,30 @@ public class HtmlAgilityPackSefazGateway : ISefazGateway
     public async Task<Buy> FindPurchaseInfos(string URL)
     {
         var htmlWeb = new HtmlWeb();
-        var items = new List<Item>();
-        var doc = await htmlWeb.LoadFromWebAsync(URL);
-        doc.DocumentNode.SelectNodes("//tr/td")
-           .Where(n => n.Descendants()
-               .Any(n => n.HasClass("txtTit") || n.HasClass("Rqtd") || n.HasClass("RUN") || n.HasClass("RvlUnit"))
-          )
-          .ToList()
-          .ForEach((element) =>
-          {
-              var totalPrice = ExtractStringAsDecimal(element.ParentNode.SelectSingleNode("td[2]/span").InnerText);
-              var itemName = element.SelectSingleNode("span[@class='txtTit']").InnerText?.Trim() ?? "";
-              var unit = element.SelectSingleNode("span[@class='RUN']").InnerText
-                ?.Split("UN: ")
-                ?.ElementAt(1)
-                ?.Trim();
-              var quantity = ExtractStringAsDecimal(
-                  element.SelectSingleNode("span[@class='Rqtd']").InnerText
-                  , ":");
-              var price = ExtractStringAsDecimal(
-                  element.SelectSingleNode("span[@class='RvlUnit']").InnerText,
-                ":");
-              var item = new Item(Name: itemName, Unit: unit!, Quantity: quantity, UnitPrice: price, TotalPrice: totalPrice);
-              items.Add(item);
-          });
-        Market market = ExtractMarket(doc);
-        var buy = new Buy(URL: URL, Market: market, Items: items);
+        //TODO: make a HTTP  Request using HttpClient get the response and load it into the HtmlDocument
+
+        //var doc = await htmlWeb.LoadFromWebAsync(URL);
+        //List<Item> items = doc.DocumentNode.SelectNodes("//tr/td[1]")
+        //  .Select((element) =>
+        //  {
+        //      var totalPrice = ExtractStringAsDecimal(element.ParentNode.SelectSingleNode("td[2]/span").InnerText);
+        //      var itemName = element.SelectSingleNode("span[@class='txtTit']").InnerText?.Trim() ?? "";
+        //      var unit = element.SelectSingleNode("span[@class='RUN']").InnerText
+        //        ?.Split("UN: ")
+        //        ?.ElementAt(1)
+        //        ?.Trim();
+        //      var quantity = ExtractStringAsDecimal(
+        //          element.SelectSingleNode("span[@class='Rqtd']").InnerText
+        //          , ":");
+        //      var price = ExtractStringAsDecimal(
+        //          element.SelectSingleNode("span[@class='RvlUnit']").InnerText,
+        //        ":");
+        //      var item = new Item(Name: itemName, Unit: unit!, Quantity: quantity, UnitPrice: price, TotalPrice: totalPrice);
+        //      return item;
+        //  })
+        //  .ToList();
+        //Market market = ExtractMarket(doc);
+        var buy = new Buy(URL: URL, Market: new Market(Name: "Mock", CNPJ: "23.306.904/0001-45", Address: "teste", FantasyName: "Mock"), Items: new List<Item>());
         return buy;
     }
 

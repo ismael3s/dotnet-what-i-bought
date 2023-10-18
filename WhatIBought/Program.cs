@@ -34,9 +34,12 @@ app.MapGet("/api/v1/find-nf", async ([FromQuery] string url, FindPurchaseInfosUs
     .WithOpenApi();
 
 
-app.MapGet("/api/v1/health", () =>
+app.MapGet("/api/v1/health-check", () =>
 {
-    return Results.Ok("Healthy");
+    return Results.Ok(new
+    {
+        Status = "Healthy"
+    });
 })
 .WithName("Health check")
 .WithOpenApi();
