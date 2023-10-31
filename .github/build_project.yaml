@@ -1,7 +1,7 @@
 name: Build and Push to Docker Registry
 
 on:
-  pull_requests:
+  pull_request:
     - main
 
 jobs:
