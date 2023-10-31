@@ -15,11 +15,11 @@ public class FindPurchaseInfosUseCase
         _brasilApiGateway = brasilApiGateway;
     }
 
-    public async Task<Buy> ExecuteAsync(FindPurchaseInfosUseCaseInput input)
+    public async Task<Buy> ExecuteAsync(FindPurchaseInfosUseCaseInput input, CancellationToken cancellationToken)
     {
         ValidateInput(input);
-        var buy = await _sefazGateway.FindPurchaseInfos(input.Url);
-        var enterprise = await _brasilApiGateway.FindEnterpriseByCNPJAsync(buy.Market.CNPJ);
+        var buy = await _sefazGateway.FindPurchaseInfos(input.Url, cancellationToken);
+        var enterprise = await _brasilApiGateway.FindEnterpriseByCNPJAsync(buy.Market.CNPJ, cancellationToken);
         return buy with
         {
             Market = buy.Market with { FantasyName = enterprise?.FantasyName ?? string.Empty }

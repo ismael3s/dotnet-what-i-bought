@@ -20,10 +20,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/api/v1/find-nf", async ([FromQuery] string url, FindPurchaseInfosUseCase findPurchaseInfosUseCase) =>
+app.MapGet("/api/v1/find-nf", async ([FromQuery] string url, FindPurchaseInfosUseCase findPurchaseInfosUseCase, CancellationToken cancellationToken) =>
 {
     var result = await findPurchaseInfosUseCase.ExecuteAsync(
-        new FindPurchaseInfosUseCase.FindPurchaseInfosUseCaseInput(url)
+        new FindPurchaseInfosUseCase.FindPurchaseInfosUseCaseInput(url),
+        cancellationToken
     );
     return Results.Ok(result);
 })
