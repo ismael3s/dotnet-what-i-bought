@@ -1,4 +1,5 @@
-﻿using Application.Gateways;
+﻿using Application.Exceptions;
+using Application.Gateways;
 
 namespace Application.UseCases;
 
@@ -6,7 +7,7 @@ public class FindPurchaseInfosUseCase
 {
     private readonly ISefazGateway _sefazGateway;
     private readonly IBrasilApiGateway _brasilApiGateway;
-    public record FindPurchaseInfosUseCaseInput(string URL);
+    public record FindPurchaseInfosUseCaseInput(string Url = "");
 
     public FindPurchaseInfosUseCase(ISefazGateway sefazGateway, IBrasilApiGateway brasilApiGateway)
     {
@@ -16,24 +17,34 @@ public class FindPurchaseInfosUseCase
 
     public async Task<Buy> ExecuteAsync(FindPurchaseInfosUseCaseInput input)
     {
+        ValidateInput(input);
+        var buy = await _sefazGateway.FindPurchaseInfos(input.Url);
+        var enterprise = await _brasilApiGateway.FindEnterpriseByCNPJAsync(buy.Market.CNPJ);
+        return buy with
+        {
+            Market = buy.Market with { FantasyName = enterprise?.FantasyName ?? string.Empty }
+        };
+    }
+
+    private void ValidateInput(FindPurchaseInfosUseCaseInput input)
+    {
         var errors = new List<string>();
-        if (string.IsNullOrWhiteSpace(input.URL))
+        if (string.IsNullOrWhiteSpace(input.Url))
         {
             errors.Add("URL é obrigatoria");
         }
-        if (!input.URL?.Contains("?p=") ?? false)
+        var uri = new Uri(input.Url);
+        if (!uri.Host.Contains(".sefaz", StringComparison.OrdinalIgnoreCase))
+        {
+            errors.Add("A URL deve ser do site da sefaz");
+        }
+        if (!input.Url.Contains("?p="))
         {
             errors.Add("URL deve conter na query string o caractere ?p=");
         }
         if (errors.Any())
         {
-            throw new Exception(string.Join(Environment.NewLine, errors));
+            throw new InvalidInputException(errors: errors);
         }
-        var buy = await _sefazGateway.FindPurchaseInfos(input.URL!);
-        var enterprise = await _brasilApiGateway.FindEnterpriseByCNPJ(buy.Market.CNPJ);
-        return buy with
-        {
-            Market = buy.Market with { FantasyName = enterprise?.FantasyName ?? string.Empty }
-        };
     }
 }

@@ -1,6 +1,7 @@
 using Application.UseCases;
 using Infra.IoC;
 using Microsoft.AspNetCore.Mvc;
+using WhatIBoughtAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services

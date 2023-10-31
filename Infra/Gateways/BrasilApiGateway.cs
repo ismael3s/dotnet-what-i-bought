@@ -19,7 +19,7 @@ public class BrasilApiGateway : IBrasilApiGateway
         this.httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Enterprise?> FindEnterpriseByCNPJ(string cnpj)
+    public async Task<Enterprise?> FindEnterpriseByCNPJAsync(string cnpj)
     {
         var cnpjOnlyNumbers = Regex.Replace(cnpj, "[^0-9]", "");
         var client = httpClientFactory.CreateClient("brasilAPI");
