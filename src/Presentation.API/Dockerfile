@@ -6,16 +6,15 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src/api
-#RUN mkdir ../Infra ../Application ../Infra.IoC
-COPY ./Presentation.API/Presentation.API.csproj .
-COPY ./Infra.IoC/Infra.IoC.csproj ../Infra.IoC/
-COPY ./Application/Application.csproj ../Application/
-COPY ../Infra/Infra.csproj ../Infra/
+COPY ./src/Presentation.API/Presentation.API.csproj .
+COPY ./src/Infra.IoC/Infra.IoC.csproj ../Infra.IoC/
+COPY ./src/Application/Application.csproj ../Application/
+COPY ./src/Infra/Infra.csproj ../Infra/
 RUN dotnet restore "./Presentation.API.csproj"
-COPY ./Infra.IoC ../Infra.IoC
-COPY ./Application ../Application
-COPY ./Infra ../Infra
-COPY ./Presentation.API .
+COPY ./src/Infra.IoC ../Infra.IoC
+COPY ./src/Application ../Application
+COPY ./src/Infra ../Infra
+COPY ./src/Presentation.API .
 WORKDIR "/src/api"
 RUN dotnet build "Presentation.API.csproj" -c Release -o /app/build
 
