@@ -6,20 +6,20 @@ namespace Application.UseCases;
 public class FindPurchaseInfosUseCase
 {
     private readonly ISefazGateway _sefazGateway;
-    private readonly IBrasilApiGateway _brasilApiGateway;
+    private readonly IBrazilApiGateway _brazilApiGateway;
     public record FindPurchaseInfosUseCaseInput(string Url = "");
 
-    public FindPurchaseInfosUseCase(ISefazGateway sefazGateway, IBrasilApiGateway brasilApiGateway)
+    public FindPurchaseInfosUseCase(ISefazGateway sefazGateway, IBrazilApiGateway brazilApiGateway)
     {
         _sefazGateway = sefazGateway;
-        _brasilApiGateway = brasilApiGateway;
+        _brazilApiGateway = brazilApiGateway;
     }
 
     public async Task<Buy> ExecuteAsync(FindPurchaseInfosUseCaseInput input, CancellationToken cancellationToken)
     {
         ValidateInput(input);
         var buy = await _sefazGateway.FindPurchaseInfos(input.Url, cancellationToken);
-        var enterprise = await _brasilApiGateway.FindEnterpriseByCNPJAsync(buy.Market.CNPJ, cancellationToken);
+        var enterprise = await _brazilApiGateway.FindEnterpriseByCNPJAsync(buy.Market.CNPJ, cancellationToken);
         return buy with
         {
             Market = buy.Market with { FantasyName = enterprise?.FantasyName ?? string.Empty }
