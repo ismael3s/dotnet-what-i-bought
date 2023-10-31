@@ -37,6 +37,7 @@ sequenceDiagram
     - Docker
     - WebAPI
     - AutoDeploy on Render
+    - CI/CD - Update docker image on registry(Docker hub)
 
  ### What will be applied
     - Unit Testing
