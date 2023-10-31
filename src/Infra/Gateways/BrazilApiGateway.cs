@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Infra.Gateways;
-public class BrazilApiGateway : IBrasilApiGateway
+public class BrazilApiGateway : IBrazilApiGateway
 {
 
     private sealed class BrazilApiEnterpriseResponse
