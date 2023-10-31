@@ -12,10 +12,10 @@ public class HtmlAgilityPackSefazGateway : ISefazGateway
         _httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Buy> FindPurchaseInfos(string URL)
+    public async Task<Buy> FindPurchaseInfos(string URL, CancellationToken cancellationToken)
     {
         var client = _httpClientFactory.CreateClient();
-        var response = await client.GetAsync(URL);
+        var response = await client.GetAsync(URL, cancellationToken);
         var html = await response.Content.ReadAsStringAsync();
         var doc = new HtmlDocument();
         doc.LoadHtml(html);

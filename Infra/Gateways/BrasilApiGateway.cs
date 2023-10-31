@@ -19,12 +19,11 @@ public class BrasilApiGateway : IBrasilApiGateway
         this.httpClientFactory = httpClientFactory;
     }
 
-    public async Task<Enterprise?> FindEnterpriseByCNPJAsync(string cnpj)
+    public async Task<Enterprise?> FindEnterpriseByCNPJAsync(string cnpj, CancellationToken cancellationToken)
     {
         var cnpjOnlyNumbers = Regex.Replace(cnpj, "[^0-9]", "");
         var client = httpClientFactory.CreateClient("brasilAPI");
-        var response = await client.GetFromJsonAsync<BrasilApiEnterpriseResponse>($"/api/cnpj/v1/{cnpjOnlyNumbers}");
-        if (response is null) return null;
-        return new Enterprise(FantasyName: response.FantasyName);
+        var response = await client.GetFromJsonAsync<BrasilApiEnterpriseResponse>($"/api/cnpj/v1/{cnpjOnlyNumbers}", cancellationToken);
+        return response is null ? null : new Enterprise(FantasyName: response.FantasyName);
     }
 }

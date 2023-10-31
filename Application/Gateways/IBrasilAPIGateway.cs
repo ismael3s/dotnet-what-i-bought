@@ -1,7 +1,7 @@
 ﻿namespace Application.Gateways;
 public interface IBrasilApiGateway
 {
-    Task<Enterprise?> FindEnterpriseByCNPJAsync(string cnpj);
+    Task<Enterprise?> FindEnterpriseByCNPJAsync(string cnpj, CancellationToken cancellationToken);
 }
 
 

@@ -1,7 +1,7 @@
 ﻿namespace Application.Gateways;
 public interface ISefazGateway
 {
-    Task<Buy> FindPurchaseInfos(string URL);
+    Task<Buy> FindPurchaseInfos(string URL, CancellationToken cancellationToken);
 }
 
 public record Buy(string URL, Market Market, IEnumerable<Item> Items);
