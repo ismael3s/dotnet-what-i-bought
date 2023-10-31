@@ -18,7 +18,6 @@ public static class Extensions
         services.AddScoped<FindPurchaseInfosUseCase>();
         return services;
     }
-
     public static IServiceCollection AddCustomHttpClient(this IServiceCollection services)
     {
         services.AddHttpClient("brasilAPI", context =>

@@ -38,6 +38,8 @@ sequenceDiagram
     - WebAPI
     - AutoDeploy on Render
     - CI/CD - Update docker image on registry(Docker hub)
+    - Rate Limiting (From .NET 7 middleware)
+    - Options Pattern
 
  ### What will be applied
     - Unit Testing
@@ -45,3 +47,4 @@ sequenceDiagram
     - Repository Pattern
     - Unit Of Work
     - CI/CD
+    - Caching
