@@ -3,6 +3,7 @@ name: Build and Push to Docker Registry
 on:
   push:
     branches:
+      - ci/update-docker-image
       - main
 env:
   REGISTRY: docker.io
