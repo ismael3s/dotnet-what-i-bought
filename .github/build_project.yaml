@@ -2,8 +2,10 @@ name: Build Project
 
 on:
   pull_request:
+    types:
+      - opened
     branches:
-      - main
+      - 'main'
 
 jobs:
   build_project:
