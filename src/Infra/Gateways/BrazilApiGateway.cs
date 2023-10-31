@@ -4,26 +4,26 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Infra.Gateways;
-public class BrasilApiGateway : IBrasilApiGateway
+public class BrazilApiGateway : IBrasilApiGateway
 {
 
-    private sealed class BrasilApiEnterpriseResponse
+    private sealed class BrazilApiEnterpriseResponse
     {
         [JsonPropertyName("nome_fantasia")]
         public string FantasyName { get; set; } = string.Empty;
     }
-    private readonly IHttpClientFactory httpClientFactory;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public BrasilApiGateway(IHttpClientFactory httpClientFactory)
+    public BrazilApiGateway(IHttpClientFactory httpClientFactory)
     {
-        this.httpClientFactory = httpClientFactory;
+        _httpClientFactory = httpClientFactory;
     }
 
     public async Task<Enterprise?> FindEnterpriseByCNPJAsync(string cnpj, CancellationToken cancellationToken)
     {
         var cnpjOnlyNumbers = Regex.Replace(cnpj, "[^0-9]", "");
-        var client = httpClientFactory.CreateClient("brasilAPI");
-        var response = await client.GetFromJsonAsync<BrasilApiEnterpriseResponse>($"/api/cnpj/v1/{cnpjOnlyNumbers}", cancellationToken);
+        var client = _httpClientFactory.CreateClient("brasilAPI");
+        var response = await client.GetFromJsonAsync<BrazilApiEnterpriseResponse>($"/api/cnpj/v1/{cnpjOnlyNumbers}", cancellationToken);
         return response is null ? null : new Enterprise(FantasyName: response.FantasyName);
     }
 }

@@ -9,7 +9,7 @@ public static class Extensions
     public static IServiceCollection AddGateways(this IServiceCollection services)
     {
         services.AddScoped<ISefazGateway, HtmlAgilityPackSefazGateway>();
-        services.AddScoped<IBrasilApiGateway, BrasilApiGateway>();
+        services.AddScoped<IBrasilApiGateway, BrazilApiGateway>();
         return services;
     }
 
