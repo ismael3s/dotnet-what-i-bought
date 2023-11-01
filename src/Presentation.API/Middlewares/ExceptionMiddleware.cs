@@ -7,10 +7,12 @@ namespace WhatIBoughtAPI.Middlewares;
 public class ExceptionMiddleware
 {
     private readonly RequestDelegate _next;
+    private readonly ILogger<ExceptionMiddleware> _logger;
 
-    public ExceptionMiddleware(RequestDelegate next)
+    public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     private sealed record ErrorResponse(
@@ -44,6 +46,11 @@ public class ExceptionMiddleware
             InvalidInputException invalidInputException => new ErrorResponse(invalidInputException.Message, invalidInputException.Errors),
             _ => new ErrorResponse(exception?.Message ?? "Erro interno do servidor", new List<string>())
         };
+        
+        if (context.Response.StatusCode == 500)
+        {
+            _logger.LogError("Error message = {ErrorMessage}, StackTrace = {StackTrace}",  exception?.Message ?? string.Empty, exception.StackTrace);
+        }
         var jsonError = JsonSerializer.Serialize(error);
         await context.Response.WriteAsync(jsonError);
     }

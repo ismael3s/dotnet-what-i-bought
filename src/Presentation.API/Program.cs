@@ -3,14 +3,19 @@ using Application.UseCases;
 using Infra.IoC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using Serilog;
 using WhatIBoughtAPI.Middlewares;
 using WhatIBoughtAPI.Options;
+using ILogger = Serilog.ILogger;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var customRateLimiterOption = new RateLimiterOption();
 builder.Configuration.GetSection("RateLimiter")
     .Bind(customRateLimiterOption);
-
+builder.Host.
+    UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration)
+);
 builder.Services
     .AddEndpointsApiExplorer()
     .AddSwaggerGen()
@@ -39,9 +44,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/api/v1/find-nf", async ([FromQuery] string url, FindPurchaseInfosUseCase findPurchaseInfosUseCase,
-        CancellationToken cancellationToken) =>
-    {
+app.MapGet("/api/v1/find-nf", async ([FromQuery] string url,
+        FindPurchaseInfosUseCase findPurchaseInfosUseCase,
+        CancellationToken cancellationToken
+    ) =>
+    {   
         var result = await findPurchaseInfosUseCase.ExecuteAsync(
             new FindPurchaseInfosUseCase.FindPurchaseInfosUseCaseInput(url),
             cancellationToken
@@ -68,6 +75,7 @@ app.MapGet("/api/v1/health-check", () =>
     .WithOpenApi();
 
 
-app.UseMiddleware<ExceptionMiddleware>();
-app.UseRateLimiter();
+app.UseMiddleware<ExceptionMiddleware>()
+    .UseRateLimiter()
+    .UseSerilogRequestLogging();
 app.Run();
