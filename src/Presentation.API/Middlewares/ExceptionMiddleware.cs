@@ -46,9 +46,10 @@ public class ExceptionMiddleware
             InvalidInputException invalidInputException => new ErrorResponse(invalidInputException.Message, invalidInputException.Errors),
             _ => new ErrorResponse(exception?.Message ?? "Erro interno do servidor", new List<string>())
         };
+        
         if (context.Response.StatusCode == 500)
         {
-            _logger.LogError("Error message = {ErrorMessage}, StackTrace = {StackTrace}", exception.Message, exception.StackTrace);
+            _logger.LogError("Error message = {ErrorMessage}, StackTrace = {StackTrace}",  exception?.Message ?? string.Empty, exception.StackTrace);
         }
         var jsonError = JsonSerializer.Serialize(error);
         await context.Response.WriteAsync(jsonError);
