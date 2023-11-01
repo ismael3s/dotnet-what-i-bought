@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application.Exceptions;
@@ -47,9 +48,9 @@ public class ExceptionMiddleware
             _ => new ErrorResponse(exception?.Message ?? "Erro interno do servidor", new List<string>())
         };
         
-        if (context.Response.StatusCode == 500)
+        if (context.Response.StatusCode == 500 && exception is not null)
         {
-            _logger.LogError("Error message = {ErrorMessage}, StackTrace = {StackTrace}",  exception?.Message ?? string.Empty, exception.StackTrace);
+            _logger.LogError("Error message = {ErrorMessage}, StackTrace = {StackTrace}",  exception.Message, exception.StackTrace);
         }
         var jsonError = JsonSerializer.Serialize(error);
         await context.Response.WriteAsync(jsonError);

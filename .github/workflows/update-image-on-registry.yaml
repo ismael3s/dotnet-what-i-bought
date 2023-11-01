@@ -46,7 +46,6 @@ jobs:
         id: vars
         run: |
           echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-          echo "docker_image_tagged=ismael3s/go-cep:$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
         
       - name: Check outputs
         run: echo ${{ steps.vars.outputs.sha_short }}
