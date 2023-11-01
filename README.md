@@ -40,7 +40,7 @@ sequenceDiagram
     - CI/CD - Update docker image on registry(Docker hub)
     - Rate Limiting (From .NET 7 middleware)
     - Options Pattern (Working on it)
-    - Structured Logging  - Serilog With Seq (Working on it)
+    - Structured Logging  - Serilog With Seq (Working on it, needs to improve the DI)
 
  ### What will be applied
     - Unit Testing
